@@ -4,14 +4,18 @@ import {
   View,
   ActivityIndicator,
   Text,
-  SafeAreaView,
   ScrollView,
   Image,
   StyleSheet,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { getPokemonByIdOrName } from '../services/pokemonApi';
 import { colors } from '../theme/colors';
-import { capitalizeName, translatePokemonType } from '../utils/pokemonUtils';
+import {
+  capitalizeName,
+  translatePokemonType,
+  translateStatName,
+} from '../utils/pokemonUtils';
 
 export default function PokemonDetailScreen({ route, navigation }) {
   const { pokemonId } = route.params;
@@ -91,8 +95,16 @@ export default function PokemonDetailScreen({ route, navigation }) {
               const type = item.type.name;
 
               return (
-                <View key={type} style={styles.typeBadge}>
-                  <Text style={styles.typeText}>{capitalizeName(translatePokemonType(type))}</Text>
+                <View
+                  key={type}
+                  style={[
+                    styles.typeBadge,
+                    { backgroundColor: colors[type] },
+                  ]}
+                >
+                  <Text style={styles.typeText}>
+                    {capitalizeName(translatePokemonType(type))}
+                  </Text>
                 </View>
               );
             })}
@@ -139,7 +151,7 @@ export default function PokemonDetailScreen({ route, navigation }) {
 
             return (
               <View key={name} style={styles.statRow}>
-                <Text style={styles.statLabel}>{name}</Text>
+                <Text style={styles.statLabel}>{translateStatName(name)}</Text>
 
                 <View style={styles.statTrack}>
                   <View
@@ -222,7 +234,7 @@ const styles = StyleSheet.create({
   },
 
   typeBadge: {
-    backgroundColor: colors.pastelLilac,
+    // backgroundColor: colors.pastelLilac,
     borderRadius: 20,
     paddingHorizontal: 17,
     paddingVertical: 8,

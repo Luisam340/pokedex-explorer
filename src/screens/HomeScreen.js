@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState, useEffect } from "react";
-import { SafeAreaView, View, Text, TextInput, Pressable, ScrollView, FlatList, ActivityIndicator, StyleSheet } from "react-native";
+import {View, Text, TextInput, Pressable, ScrollView, FlatList, ActivityIndicator, StyleSheet } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import PokemonCard from "../components/PokemonCard";
 import useResponsive from "../hooks/useResponsive";
 import { getPokemonPage } from "../services/pokemonApi";
