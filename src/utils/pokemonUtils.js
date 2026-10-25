@@ -13,7 +13,9 @@ export function getPokemonImageUrl(id) {
   return pokemonImage;
 }
 
-export function formatPokemonNumber() {}
+export function formatPokemonNumber(id) {
+  return String(id).padStart(3, '0');
+}
 
 export function capitalizeName(name) {
   return String(name).charAt(0).toUpperCase() + String(name).slice(1);

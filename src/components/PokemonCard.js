@@ -1,6 +1,6 @@
-import { Pressable, Image, Text, StyleSheet } from "react-native";
-import { colors } from "../theme/colors";
-import { capitalizeName } from "../utils/pokemonUtils";
+import { Pressable, Image, Text, StyleSheet } from 'react-native';
+import { colors } from '../theme/colors';
+import { capitalizeName, formatPokemonNumber } from '../utils/pokemonUtils';
 
 export default function PokemonCard({ data, onPress }) {
   const pokemonName = capitalizeName(data.name);
@@ -8,7 +8,7 @@ export default function PokemonCard({ data, onPress }) {
   return (
     <Pressable onPress={onPress} style={styles.card}>
       <Image source={{ uri: data.imageUrl }} style={styles.image} />
-      <Text style={styles.number}>#{String(data.id).padStart(3, '0')}</Text>
+      <Text style={styles.number}>#{formatPokemonNumber(data.id)}</Text>
       <Text style={styles.name}>{pokemonName}</Text>
     </Pressable>
   );
