@@ -8,7 +8,7 @@ export function extractPokemonId(url) {
 
 export function getPokemonImageUrl(id) {
   const BASE_URL_IMAGE =
-    'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/';
+    'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork';
   const pokemonImage = `${BASE_URL_IMAGE}/${id}.png`;
   return pokemonImage;
 }
