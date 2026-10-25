@@ -1,21 +1,11 @@
-import { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  ScrollView,
-  FlatList,
-  Pressable,
-  StyleSheet,
-  ActivityIndicator,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors } from '../theme/colors';
-import { Ionicons } from '@expo/vector-icons';
-import PokemonCard from '../components/PokemonCard';
-import useResponsive from '../hooks/useResponsive';
-import { getPokemonPage } from '../services/pokemonApi';
-import { extractPokemonId, getPokemonImageUrl } from '../utils/pokemonUtils';
+import { Ionicons } from "@expo/vector-icons";
+import { useState, useEffect } from "react";
+import { SafeAreaView, View, Text, TextInput, Pressable, ScrollView, FlatList, ActivityIndicator, StyleSheet } from "react-native";
+import PokemonCard from "../components/PokemonCard";
+import useResponsive from "../hooks/useResponsive";
+import { getPokemonPage } from "../services/pokemonApi";
+import { colors } from "../theme/colors";
+import { extractPokemonId, getPokemonImageUrl } from "../utils/pokemonUtils";
 
 export default function HomeScreen({ navigation }) {
   const [search, setSearch] = useState('');
@@ -24,46 +14,46 @@ export default function HomeScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    let active = true;
-    const loadPokemons = async () => {
-      setLoading(true);
-      setError('');
-      try {
-        const data = await getPokemonPage(20, 0);
-        const formattedPokemons = data.results.map((pokemon) => {
-          const id = extractPokemonId(pokemon.url);
-          return {
-            id: id,
-            name: pokemon.name,
-            imageUrl: getPokemonImageUrl(id),
-          };
-        });
-        if (active) {
-          setResults(formattedPokemons);
-        }
-      } catch (err) {
-        if (active) {
-          setError('No se pudo conectar con la API. Revisa tu internet');
-        }
-      } finally {
-        if (active) {
-          setLoading(false);
-        }
-      }
-    };
+  const loadPokemons = async (offset = 0) => {
+    if (loading) return;
 
-    loadPokemons();
-    return () => {
-      active = false;
-    };
+    setLoading(true);
+    setError('');
+
+    try {
+      const data = await getPokemonPage(20, offset);
+
+      const formattedPokemons = data.results.map((pokemon) => {
+        const id = extractPokemonId(pokemon.url);
+
+        return {
+          id: id,
+          name: pokemon.name,
+          imageUrl: getPokemonImageUrl(id),
+        };
+      });
+
+      setResults((previous) =>
+        offset === 0 ? formattedPokemons : [...previous, ...formattedPokemons],
+      );
+    } catch (err) {
+      setError('No se pudo cargar la información. Revisa tu internet');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadPokemons(0);
   }, []);
 
   return (
     <SafeAreaView style={[styles.container, { paddingHorizontal }]}>
       <View style={styles.header}>
         <Text style={styles.title}>Pokedex Explorer</Text>
-        <Text style={styles.subtitle}>¡Descubre los secretos de cada Pokémon ahora mismo!</Text>
+        <Text style={styles.subtitle}>
+          ¡Descubre los secretos de cada Pokémon ahora mismo!
+        </Text>
       </View>
 
       <View style={styles.searchContainer}>
@@ -111,9 +101,7 @@ export default function HomeScreen({ navigation }) {
           <PokemonCard
             data={item}
             onPress={() =>
-              navigation.navigate('PokemonDetail', {
-                
-              })
+              navigation.navigate('PokemonDetailScreen', { pokemonId: item.id })
             }
           />
         )}
@@ -131,6 +119,19 @@ export default function HomeScreen({ navigation }) {
               Aún no hay Pokemon para mostrar.
             </Text>
           )
+        }
+        ListFooterComponent={
+          <Pressable
+            onPress={() => loadPokemons(results.length)}
+            style={({ pressed }) => [
+              styles.nextButton,
+              pressed && styles.nextButtonPressed,
+            ]}
+            accessibilityRole="button"
+          >
+            <Text style={styles.nextButtonText}>Cargar más</Text>
+            <Ionicons name="arrow-forward" size={18} color={colors.pinkIvory} />
+          </Pressable>
         }
       />
     </SafeAreaView>
@@ -207,5 +208,39 @@ const styles = StyleSheet.create({
     marginTop: 45,
     fontSize: 14,
     color: colors.roseGold,
+  },
+  nextButton: {
+    backgroundColor: colors.primaryButton,
+    borderRadius: 18,
+    paddingHorizontal: 26,
+    paddingVertical: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    gap: 10,
+    marginVertical: 16,
+    minWidth: 170,
+
+    shadowColor: colors.roseGold,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+
+  nextButtonPressed: {
+    opacity: 0.8,
+    transform: [{ scale: 0.97 }],
+  },
+
+  nextButtonText: {
+    color: colors.pinkIvory,
+    fontSize: 16,
+    fontWeight: '600',
+    letterSpacing: 0.4,
   },
 });

@@ -6,10 +6,12 @@
     "moduleResolution": "Bundler",
     "jsx": "react-jsx",
     "allowJs": true,
-    "checkJs": false,
+    "checkJs": true,
+    "strict": false,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
     "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true,
-    "noImplicitAny": false
+    "skipLibCheck": true
   },
   "include": [
     "**/*.js",

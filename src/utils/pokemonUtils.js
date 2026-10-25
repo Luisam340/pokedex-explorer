@@ -11,11 +11,17 @@ export function getPokemonImageUrl(id) {
 }
 
 export function formatPokemonNumber() {}
+
 export function capitalizeName(name) {
   return String(name).charAt(0).toUpperCase() + String(name).slice(1);
 }
+
 export function normalizeSearchTerm() {}
+
 export function formatHeight() {}
+
 export function formatWeight() {}
+
 export function translatePokemonType() {}
+
 export function translateStatName() {}

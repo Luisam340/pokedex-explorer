@@ -1,10 +1,6 @@
-import { Image, Pressable, StyleSheet, Text } from 'react-native';
-import {
-  capitalizeName,
-  extractPokemonId,
-  getPokemonImageUrl,
-} from '../utils/pokemonUtils';
-import { colors } from '../theme/colors';
+import { Pressable, Image, Text, StyleSheet } from "react-native";
+import { colors } from "../theme/colors";
+import { capitalizeName } from "../utils/pokemonUtils";
 
 export default function PokemonCard({ data, onPress }) {
   const pokemonName = capitalizeName(data.name);
@@ -20,15 +16,16 @@ export default function PokemonCard({ data, onPress }) {
 
 const styles = StyleSheet.create({
   image: {
-    width: 125,
-    height: 125,
+    width: 120,
+    height: 120,
     resizeMode: 'contain',
   },
   card: {
     flex: 1,
+    height: 200,
     backgroundColor: colors.pastelPink,
     borderRadius: 22,
-    padding: 14,
+    padding: 12,
     margin: 6,
     alignItems: 'center',
     justifyContent: 'center',
