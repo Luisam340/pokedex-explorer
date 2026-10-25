@@ -1,3 +1,6 @@
+import { translatationStatName } from '../data/translatationStatName';
+import { translationPokemonType } from '../data/translationPokemonType';
+
 export function extractPokemonId(url) {
   const parts = url.split('/').filter(Boolean);
   return parts.pop();
@@ -16,44 +19,16 @@ export function capitalizeName(name) {
   return String(name).charAt(0).toUpperCase() + String(name).slice(1);
 }
 
-export function normalizeSearchTerm() {}
-
-export function formatHeight(height) {}
-
-export function formatWeight(weight) {}
+export function normalizedSearch(search) {
+  return search.trim().toLowerCase();
+}
 
 export function translatePokemonType(type) {
-  const spanishTranslations = {
-    normal: 'Normal',
-    fire: 'Fuego',
-    water: 'Agua',
-    grass: 'Planta',
-    electric: 'Eléctrico',
-    ice: 'Hielo',
-    fighting: 'Lucha',
-    poison: 'Veneno',
-    ground: 'Tierra',
-    flying: 'Volador',
-    psychic: 'Psíquico',
-    bug: 'Bicho',
-    rock: 'Roca',
-    ghost: 'Fantasma',
-    dragon: 'Dragón',
-    dark: 'Siniestro',
-    steel: 'Acero',
-    fairy: 'Hada',
-  };
+  const spanishTranslations = translationPokemonType;
   return spanishTranslations[type] ?? type;
 }
 
 export function translateStatName(name) {
-  const spanishTranslations = {
-    hp: 'Puntos de Salud',
-    attack: 'Ataque',
-    defense: 'Defensa',
-    'special-attack': 'Ataque Especial',
-    'special-defense': 'Defensa Especial',
-    speed: 'Velocidad',
-  };
+  const spanishTranslations = translatationStatName;
   return spanishTranslations[name] ?? name;
 }

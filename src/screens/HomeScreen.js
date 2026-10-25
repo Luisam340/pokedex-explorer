@@ -13,18 +13,42 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PokemonCard from '../components/PokemonCard';
 import useResponsive from '../hooks/useResponsive';
-import { getPokemonPage } from '../services/pokemonApi';
+import { getPokemonByIdOrName, getPokemonPage } from '../services/pokemonApi';
 import { colors } from '../theme/colors';
-import { extractPokemonId, getPokemonImageUrl } from '../utils/pokemonUtils';
+import {
+  extractPokemonId,
+  getPokemonImageUrl,
+  normalizedSearch,
+} from '../utils/pokemonUtils';
 
 export default function HomeScreen({ navigation }) {
   const [search, setSearch] = useState('');
   const [results, setResults] = useState([]);
-  const { columns, paddingHorizontal } = useResponsive();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [hasMore, setHasMore] = useState(true);
+  const [searchedPokemon, setSearchedPokemon] = useState(null);
+  const [searching, setSearching] = useState(false);
   const isLoadingPokemonsRef = useRef(false);
+  const { columns, paddingHorizontal } = useResponsive();
+
+  const searchPokemon = async () => {
+    const pokemon = normalizedSearch(search);
+    if (!pokemon) return;
+    try {
+      setSearching(true);
+      setSearchedPokemon(null);
+      setError('');
+      const data = await getPokemonByIdOrName(pokemon);
+      setSearchedPokemon({
+        id: data.id,
+        name: data.name,
+        imageUrl: getPokemonImageUrl(data.id),
+      });
+    } catch (err) {
+      setError('Este Pokémon no existe.');
+    }
+  };
 
   const loadPokemons = async (offset = 0) => {
     if (isLoadingPokemonsRef.current || (offset > 0 && !hasMore)) return;
@@ -62,6 +86,7 @@ export default function HomeScreen({ navigation }) {
   }, []);
 
   const renderFooter = () => {
+    if (searchedPokemon) return null;
     if (loading) {
       return <ActivityIndicator size="small" color={colors.roseGold} />;
     }
@@ -96,11 +121,17 @@ export default function HomeScreen({ navigation }) {
           autoCapitalize="none"
           autoCorrect={false}
           returnKeyType="search"
+          onSubmitEditing={() => searchPokemon()}
         />
 
         {search.length > 0 && (
           <Pressable
-            onPress={() => setSearch('')}
+            onPress={() => {
+              setSearch('');
+              setSearchedPokemon(null);
+              setSearching(false);
+              setError('');
+            }}
             accessibilityLabel="Limpiar búsqueda"
           >
             <Ionicons name="close-circle" size={20} color={colors.roseGold} />
@@ -108,7 +139,6 @@ export default function HomeScreen({ navigation }) {
         )}
       </View>
 
-      {/* Categorías: se agregarán después */}
       <ScrollView
         style={styles.categoriesContainer}
         horizontal
@@ -117,13 +147,11 @@ export default function HomeScreen({ navigation }) {
         {/* Aquí irán los tipos Pokémon */}
       </ScrollView>
 
-      {/* Título de sección */}
       <Text style={styles.sectionTitle}>Explora Pokemon</Text>
 
-      {/* Lista */}
       <FlatList
         key={columns}
-        data={results}
+        data={searching ? (searchedPokemon ? [searchedPokemon] : []) : results}
         keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => (
           <PokemonCard
@@ -150,7 +178,7 @@ export default function HomeScreen({ navigation }) {
         }
         ListFooterComponent={renderFooter}
         onEndReached={() => {
-          if (hasMore && !loading && !error) {
+          if (!searchedPokemon && hasMore && !loading && !error) {
             loadPokemons(results.length);
           }
         }}
