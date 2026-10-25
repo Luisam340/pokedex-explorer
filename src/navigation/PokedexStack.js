@@ -5,7 +5,7 @@ const Stack = createNativeStackNavigator();
 
 export default function PokedexStack() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator id="PokedexStack">
        <Stack.Screen
         name="HomeScreen"
         component={HomeScreen}

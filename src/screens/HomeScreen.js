@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -24,10 +24,12 @@ export default function HomeScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [hasMore, setHasMore] = useState(true);
+  const isLoadingPokemonsRef = useRef(false);
 
   const loadPokemons = async (offset = 0) => {
-    if (loading) return;
+    if (isLoadingPokemonsRef.current || (offset > 0 && !hasMore)) return;
 
+    isLoadingPokemonsRef.current = true;
     setLoading(true);
     setError('');
 
@@ -50,6 +52,7 @@ export default function HomeScreen({ navigation }) {
     } catch (err) {
       setError('No se pudo cargar la información. Revisa tu internet');
     } finally {
+      isLoadingPokemonsRef.current = false;
       setLoading(false);
     }
   };
