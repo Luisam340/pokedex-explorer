@@ -9,7 +9,7 @@ export default function PokedexStack() {
        <Stack.Screen
         name="HomeScreen"
         component={HomeScreen}
-        options={{ headerShown: true}}
+        options={{ headerShown: false}}
       ></Stack.Screen>
       <Stack.Screen
         name="PokemonDetailScreen"

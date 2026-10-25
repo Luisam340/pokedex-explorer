@@ -1,12 +1,21 @@
-import { Ionicons } from "@expo/vector-icons";
-import { useState, useEffect } from "react";
-import {View, Text, TextInput, Pressable, ScrollView, FlatList, ActivityIndicator, StyleSheet } from "react-native";
+import { Ionicons } from '@expo/vector-icons';
+import { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  ScrollView,
+  FlatList,
+  ActivityIndicator,
+  StyleSheet,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import PokemonCard from "../components/PokemonCard";
-import useResponsive from "../hooks/useResponsive";
-import { getPokemonPage } from "../services/pokemonApi";
-import { colors } from "../theme/colors";
-import { extractPokemonId, getPokemonImageUrl } from "../utils/pokemonUtils";
+import PokemonCard from '../components/PokemonCard';
+import useResponsive from '../hooks/useResponsive';
+import { getPokemonPage } from '../services/pokemonApi';
+import { colors } from '../theme/colors';
+import { extractPokemonId, getPokemonImageUrl } from '../utils/pokemonUtils';
 
 export default function HomeScreen({ navigation }) {
   const [search, setSearch] = useState('');
@@ -14,6 +23,7 @@ export default function HomeScreen({ navigation }) {
   const { columns, paddingHorizontal } = useResponsive();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [hasMore, setHasMore] = useState(true);
 
   const loadPokemons = async (offset = 0) => {
     if (loading) return;
@@ -23,7 +33,7 @@ export default function HomeScreen({ navigation }) {
 
     try {
       const data = await getPokemonPage(20, offset);
-
+      setHasMore(data.next !== null);
       const formattedPokemons = data.results.map((pokemon) => {
         const id = extractPokemonId(pokemon.url);
 
@@ -47,6 +57,20 @@ export default function HomeScreen({ navigation }) {
   useEffect(() => {
     loadPokemons(0);
   }, []);
+
+  const renderFooter = () => {
+    if (loading) {
+      return <ActivityIndicator size="small" color={colors.roseGold} />;
+    }
+
+    if (!hasMore && results.length > 0) {
+      return (
+        <Text style={styles.emptyText}>No hay más pokémon por mostrar.</Text>
+      );
+    }
+
+    return null;
+  };
 
   return (
     <SafeAreaView style={[styles.container, { paddingHorizontal }]}>
@@ -121,19 +145,13 @@ export default function HomeScreen({ navigation }) {
             </Text>
           )
         }
-        ListFooterComponent={
-          <Pressable
-            onPress={() => loadPokemons(results.length)}
-            style={({ pressed }) => [
-              styles.nextButton,
-              pressed && styles.nextButtonPressed,
-            ]}
-            accessibilityRole="button"
-          >
-            <Text style={styles.nextButtonText}>Cargar más</Text>
-            <Ionicons name="arrow-forward" size={18} color={colors.pinkIvory} />
-          </Pressable>
-        }
+        ListFooterComponent={renderFooter}
+        onEndReached={() => {
+          if (hasMore && !loading && !error) {
+            loadPokemons(results.length);
+          }
+        }}
+        onEndReachedThreshold={0.4}
       />
     </SafeAreaView>
   );
