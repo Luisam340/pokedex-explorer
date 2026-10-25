@@ -18,10 +18,19 @@ export function capitalizeName(name) {
 
 export function normalizeSearchTerm() {}
 
-export function formatHeight() {}
+export function formatHeight(height) {}
 
-export function formatWeight() {}
+export function formatWeight(weight) {}
 
-export function translatePokemonType() {}
+export function translatePokemonType(type) {
+  const spanishTranslations = {
+    grass: 'Planta',
+    poison: 'Veneno',
+    electric: 'Eléctrico',
+    fire: 'Fuego',
+    water: 'Agua',
+  };
+  return spanishTranslations[type] ?? type;
+}
 
-export function translateStatName() {}
+export function translateStatName(stats) {}

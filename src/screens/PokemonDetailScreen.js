@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { getPokemonByIdOrName } from '../services/pokemonApi';
 import { colors } from '../theme/colors';
-import { capitalizeName } from '../utils/pokemonUtils';
+import { capitalizeName, translatePokemonType } from '../utils/pokemonUtils';
 
 export default function PokemonDetailScreen({ route, navigation }) {
   const { pokemonId } = route.params;
@@ -85,6 +85,18 @@ export default function PokemonDetailScreen({ route, navigation }) {
           <Text style={styles.pokemonNumber}>
             #{String(pokemon.id).padStart(3, '0')}
           </Text>
+
+          <View style={styles.typesContainer}>
+            {pokemon.types.map((item) => {
+              const type = item.type.name;
+
+              return (
+                <View key={type} style={styles.typeBadge}>
+                  <Text style={styles.typeText}>{capitalizeName(translatePokemonType(type))}</Text>
+                </View>
+              );
+            })}
+          </View>
         </View>
 
         <View style={styles.measurementsContainer}>
@@ -210,6 +222,7 @@ const styles = StyleSheet.create({
   },
 
   typeBadge: {
+    backgroundColor: colors.pastelLilac,
     borderRadius: 20,
     paddingHorizontal: 17,
     paddingVertical: 8,
